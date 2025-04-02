@@ -1,3 +1,5 @@
+import { foamProducts } from '../data/foamProducts';
+
 export const densityRates = {
   '9': 0.00361,
   '18': 0.00361,
@@ -30,7 +32,7 @@ export const unitConversions = {
   feet: 304.8
 };
 
-export const calculatePrice = (dimensions, thickness, density, quantity, selectedUnit) => {
+export const calculatePrice = (dimensions, thickness, density, quantity, selectedUnit, foamType = 'ALL_FOAM') => {
   // Validate inputs
   if (!dimensions.length || !dimensions.width || !thickness || !density) return 0;
   
@@ -41,8 +43,8 @@ export const calculatePrice = (dimensions, thickness, density, quantity, selecte
   // Calculate area in square inches
   const area = lengthInches * widthInches;
   
-  // Get density rate
-  const rate = densityRates[density] || 0;
+  // Get density rate from foamProducts
+  const rate = foamProducts[foamType]?.ratePerMM[density] || densityRates[density] || 0;
   
   // Calculate final price
   const price = area * thickness * rate * quantity;
