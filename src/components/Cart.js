@@ -1,98 +1,121 @@
 import React from 'react';
 import { 
-  Typography, Button, Table, TableBody, TableCell, 
-  TableContainer, TableHead, TableRow, Paper, Box,
-  IconButton
+  Grid, Card, CardContent, Typography, Button, IconButton, Box, 
+  Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper 
 } from '@mui/material';
-import CloseIcon from '@mui/icons-material/Close';
-import html2pdf from 'html2pdf.js';
+import DeleteIcon from '@mui/icons-material/Delete';
+import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 
-function Cart({ cartItems, onClose }) {
-  const totalAmount = cartItems.reduce((sum, item) => sum + item.totalPrice, 0);
+function Cart({ cartItems, removeFromCart, onClose }) {
+  const calculateTotal = () => {
+    return cartItems.reduce((total, item) => total + item.totalPrice, 0);
+  };
 
   const generatePDF = () => {
-    const element = document.getElementById('invoice-content');
-    const opt = {
-      margin: 1,
-      filename: 'foam-invoice.pdf',
-      image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: { scale: 2 },
-      jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
-    };
+    const doc = new jsPDF();
+    
+    // Add logo
+    const logo = new Image();
+    logo.src = '/images/gktLogo.png';
+    doc.addImage(logo, 'PNG', 10, 10, 30, 30);
 
-    html2pdf().set(opt).from(element).save();
+    // Add title
+    doc.setFontSize(18);
+    doc.text('Gurukrupa Traders - Order Summary', 50, 20);
+
+    // Add table using autoTable directly
+    autoTable(doc, {
+      startY: 40,
+      head: [['Product', 'Dimensions', 'Thickness', 'Density', 'Quantity', 'Price']],
+      body: cartItems.map(item => [
+        item.name,
+        `${item.dimensions.length}x${item.dimensions.width} ${item.unit}`,
+        `${item.thickness}mm`,
+        item.density,
+        item.quantity,
+        `₹${item.totalPrice}`
+      ]),
+      theme: 'grid',
+      styles: { fontSize: 10 }
+    });
+
+    // Add total
+    doc.setFontSize(14);
+    doc.text(`Total: ₹${calculateTotal()}`, 10, doc.lastAutoTable.finalY + 20);
+
+    // Save and share
+    const pdfBlob = doc.output('blob');
+    const pdfUrl = URL.createObjectURL(pdfBlob);
+    
+    // WhatsApp sharing
+    const whatsappUrl = `https://wa.me/919604003322?text=Here's%20my%20order%20summary%20from%20Gurukrupa%20Traders&attachment=${pdfUrl}`;
+    window.open(whatsappUrl, '_blank');
   };
 
   return (
-    <div>
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-        <Typography variant="h5">Cart Items</Typography>
-        <IconButton onClick={onClose}>
-          <CloseIcon />
-        </IconButton>
-      </Box>
-
-      <div id="invoice-content">
-        <Box textAlign="center" mb={3}>
-          <Typography variant="h4" color="secondary.main" gutterBottom>
-            Gurukrupa Traders
-          </Typography>
-          <Typography variant="subtitle1" gutterBottom>
-            Foam Products Invoice
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            Date: {new Date().toLocaleDateString()}
-          </Typography>
-        </Box>
-
-        <TableContainer component={Paper}>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>Product</TableCell>
-                <TableCell>Dimensions</TableCell>
-                <TableCell>Thickness</TableCell>
-                <TableCell align="right">Price</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {cartItems.map((item, index) => (
-                <TableRow key={index}>
-                  <TableCell>{item.name}</TableCell>
-                  <TableCell>
-                    {`${item.dimensions.length} × ${item.dimensions.width} ${item.unit}`}
-                  </TableCell>
-                  <TableCell>{`${item.thickness}mm`}</TableCell>
-                  <TableCell align="right">₹{item.totalPrice}</TableCell>
-                </TableRow>
-              ))}
-              <TableRow>
-                <TableCell colSpan={3} align="right">
-                  <strong>Total Amount:</strong>
-                </TableCell>
-                <TableCell align="right">
-                  <strong>₹{totalAmount}</strong>
+    <Box>
+      <TableContainer component={Paper}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>Product</TableCell>
+              <TableCell>Dimensions</TableCell>
+              <TableCell>Thickness</TableCell>
+              <TableCell>Density</TableCell>
+              <TableCell>Quantity</TableCell>
+              <TableCell>Price</TableCell>
+              <TableCell>Action</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {cartItems.map((item, index) => (
+              <TableRow key={index}>
+                <TableCell>{item.name}</TableCell>
+                <TableCell>{item.dimensions.length}x{item.dimensions.width} {item.unit}</TableCell>
+                <TableCell>{item.thickness}mm</TableCell>
+                <TableCell>{item.density}</TableCell>
+                <TableCell>{item.quantity}</TableCell>
+                <TableCell>₹{item.totalPrice}</TableCell>
+                <TableCell>
+                  <IconButton 
+                    color="error" 
+                    onClick={() => removeFromCart(index)}
+                    aria-label="delete"
+                  >
+                    <DeleteIcon />
+                  </IconButton>
                 </TableCell>
               </TableRow>
-            </TableBody>
-          </Table>
-        </TableContainer>
-      </div>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
 
-      <Box mt={3} display="flex" justifyContent="flex-end" gap={2}>
-        <Button variant="outlined" onClick={onClose}>
-          Close
-        </Button>
+      <Box sx={{ mt: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <Typography variant="h6">
+          Total: ₹{calculateTotal()}
+        </Typography>
+        
         <Button 
           variant="contained" 
           color="primary" 
+          startIcon={<PictureAsPdfIcon />}
           onClick={generatePDF}
-          disabled={cartItems.length === 0}
         >
-          Generate Invoice
+          Share via WhatsApp
         </Button>
       </Box>
-    </div>
+
+      <Box sx={{ mt: 2, display: 'flex', justifyContent: 'flex-end' }}>
+        <Button 
+          variant="outlined" 
+          onClick={onClose}
+          sx={{ mr: 2 }}
+        >
+          Close
+        </Button>
+      </Box>
+    </Box>
   );
 }
 

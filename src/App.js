@@ -10,8 +10,15 @@ function App() {
   const [cartItems, setCartItems] = useState([]);
   const [cartOpen, setCartOpen] = useState(false);
 
-  const addToCart = (product) => {
-    setCartItems([...cartItems, product]);
+  const addToCart = (product, foamType) => {
+    setCartItems(prev => [...prev, {
+      ...product,
+      foamType: foamType
+    }]);
+  };
+
+  const removeFromCart = (index) => {
+    setCartItems(prev => prev.filter((_, i) => i !== index));
   };
 
   const modalStyle = {
@@ -34,8 +41,14 @@ function App() {
       <div>
         <AppBar position="fixed" sx={{ bgcolor: 'white', color: 'secondary.main' }}>
           <Toolbar>
+            <img 
+              src="/images/gktLogo.png" 
+              alt="Company Logo" 
+              style={{ width: '50px', marginRight: '10px' }} 
+            />
             <Typography variant="h6" component="div" sx={{ flexGrow: 1, fontWeight: 'bold' }}>
-              Gurukrupa Traders
+              <span style={{ color: 'red' }}>Gurukrupa</span>{' '}
+              <span style={{ color: '#00008b' }}>Traders</span>
             </Typography>
             <IconButton color="inherit" onClick={() => setCartOpen(true)}>
               <Badge badgeContent={cartItems.length} color="primary">
@@ -52,7 +65,7 @@ function App() {
             onClose={() => setCartOpen(false)}
           >
             <Box sx={modalStyle}>
-              <Cart cartItems={cartItems} onClose={() => setCartOpen(false)} />
+              <Cart cartItems={cartItems} removeFromCart={removeFromCart} onClose={() => setCartOpen(false)} />
             </Box>
           </Modal>
         </Container>

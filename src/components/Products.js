@@ -1,14 +1,15 @@
 import React, { useState } from 'react';
 import { 
   Grid, Card, CardContent, CardMedia, Typography, Button,
-  FormControl, InputLabel, Select, MenuItem, TextField, Paper
+  FormControl, InputLabel, Select, MenuItem, TextField, Paper,
+  Box // Add this import
 } from '@mui/material';
 
 const products = [
   {
     id: 1,
     name: 'White LD PU Foam',
-    basePrice: 100,
+    // Removed basePrice
     image: 'https://5.imimg.com/data5/XF/AM/SG/NSDMERP-56297551/image-1000x1000.jpeg',
     thicknessOptions: [2,3,4,5,6,7,8,9,10,12,15,18,19,20,21,25,30,35,40,45, 50,70, 75,80,85,90,95, 100,125, 150, 200, 250],
     category: 'Mattress Raw Materials',
@@ -28,7 +29,7 @@ const products = [
     name: 'Rebonded Foam Sheet',
     basePrice: 80,
     image: 'https://5.imimg.com/data5/AO/VM/HT/SELLER-6371482/bonded-foam-sheets-500x500.jpg',
-    thicknessOptions: [12,15,18,19,20,21, 22,23,24, 25,30,35,40,45,48, 50,55,60,65,70, 75,80,85,90,95,98, 100,110,115,120,125,150],
+    thicknessOptions: [12,15,18,19,20,21, 22,23,24, 25,30,35,40,45,48,50,55,60,65,70, 75,80,85,90,95,98, 100,110,115,120,125,150],
     category: 'Mattress Raw Materials',
     density: '80, 90, 100, 110'
   },
@@ -38,7 +39,7 @@ const products = [
     name: 'Super Soft Foam',
     basePrice: 60,
     image: 'https://5.imimg.com/data5/RA/FY/MY-56919196/super-soft-foam-sheet.jpg',
-    thicknessOptions: [2,3, 4,  5, 6, 7, 8, 9 ,10,12,15,18,19, 20,21, 25, 30,35, 40,45, 50,70, 75,80,85,90,95, 100,125, 150, 200, 250],
+    thicknessOptions: [2,3,4,5,6,7,8,9,10,12,15,18,19, 20,21, 25, 30,35, 40,45, 50,70, 75,80,85,90,95, 100,125, 150, 200, 250],
     category: 'Mattress Raw Materials',
     density: '24, 28, 32, 40, 40HR'
   },
@@ -132,18 +133,36 @@ const unitConversions = {
   feet: 304.8
 };
 
+const densityRates = {
+  '9': 0.00361,
+  '18': 0.00361,
+  '23': 0.00434,
+  '28': 0.00477,
+  '32': 0.00606,
+  '40': 0.00722,
+  '50': 0.00848,
+  '55': 0.00900,
+  '60': 0.00950,
+  '65': 0.01000,
+  '70': 0.01050,
+  '75': 0.01100,
+  '80': 0.01150,
+  '90': 0.01200,
+  '100': 0.01250,
+  '110': 0.01300
+};
+
+import { foamProducts } from '../data/foamProducts';
+
+// Add quantity state
 function Products({ addToCart }) {
   const [selectedUnit, setSelectedUnit] = useState('mm');
   const [productDimensions, setProductDimensions] = useState({});
   const [productThickness, setProductThickness] = useState({});
   const [selectedDensities, setSelectedDensities] = useState({});
-
-  const updateDensity = (productId, value) => {
-    setSelectedDensities(prev => ({
-      ...prev,
-      [productId]: value
-    }));
-  };
+  const [quantities, setQuantities] = useState({});
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedFoamType, setSelectedFoamType] = useState('ALL_FOAM'); // Add this line
 
   const updateDimensions = (productId, field, value) => {
     setProductDimensions(prev => ({
@@ -155,6 +174,13 @@ function Products({ addToCart }) {
     }));
   };
 
+  const updateDensity = (productId, value) => {
+    setSelectedDensities(prev => ({
+      ...prev,
+      [productId]: value
+    }));
+  };
+
   const updateThickness = (productId, value) => {
     setProductThickness(prev => ({
       ...prev,
@@ -162,22 +188,95 @@ function Products({ addToCart }) {
     }));
   };
 
-  const calculatePrice = (productId, basePrice) => {
+  // In the Products component function
+  const updateQuantity = (productId, value) => {
+    setQuantities(prev => ({
+      ...prev,
+      [productId]: value
+    }));
+  };
+
+  const handleFoamTypeChange = (productId, value) => {
+    setSelectedFoamType(value);
+    // Reset density when foam type changes
+    setSelectedDensities(prev => ({
+      ...prev,
+      [productId]: ''
+    }));
+  };
+
+  const calculatePrice = (productId) => {
     const dimensions = productDimensions[productId] || { length: '', width: '' };
     const thickness = productThickness[productId];
+    const quantity = quantities[productId] || 1;
+    const density = selectedDensities[productId];
 
-    if (!dimensions.length || !dimensions.width || !thickness) return basePrice;
-    const area = (dimensions.length * dimensions.width * unitConversions[selectedUnit]) / 1000000;
-    return Math.round(basePrice * area * (thickness/10));
+    if (!dimensions.length || !dimensions.width || !thickness || !density) return 0;
+    
+    const lengthMM = dimensions.length * unitConversions[selectedUnit];
+    const widthMM = dimensions.width * unitConversions[selectedUnit];
+    const lengthInches = lengthMM / 25.4;
+    const widthInches = widthMM / 25.4;
+    const area = lengthInches * widthInches;
+    
+    // Get rate based on product type
+    let rate;
+    switch (productId) {
+      case 3: // Rebonded Foam
+        rate = densityRates[density] || 0;
+        break;
+      case 5: // Memory Foam
+      case 6: // Gel Memory Foam
+        rate = foamProducts.MEMORY_FOAM.ratePerMM[density] || 0;
+        break;
+      case 12: // Convulated Foam
+        rate = foamProducts.ALL_FOAM.ratePerMM[density] || 0;
+        break;
+      default:
+        rate = foamProducts[selectedFoamType].ratePerMM[density] || 0;
+    }
+    
+    const price = area * thickness * rate * quantity;
+    return Math.round(price);
   };
+
+  // Filter products based on search term
+  const filteredProducts = products.filter(product =>
+    product.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <Grid container spacing={3} sx={{ mt: 2 }}>
+      {/* Header section */}
       <Grid item xs={12}>
-        <Paper sx={{ p: 2, mb: 3, bgcolor: 'secondary.main', color: 'white' }}>
+        <Paper sx={{ p: 2, mb: 3, bgcolor: 'white', color: 'white' }}>
           <Typography variant="h4" align="center" gutterBottom>
-            Gurukrupa Traders
+            <Box display="flex" alignItems="center" justifyContent="center">
+              <img 
+                src="/images/gktLogo.png" 
+                alt="Company Logo" 
+                style={{ width: '50px', marginRight: '10px' }} 
+              />
+              <span style={{ color: '#ff0000' }}>Gurukrupa</span>{' '}
+              <span style={{ color: '#00008b' }}>Traders</span>
+            </Box>
           </Typography>
+          
+          {/* Search Bar */}
+          <TextField
+            fullWidth
+            variant="outlined"
+            placeholder="Search products..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            sx={{ mb: 2, bgcolor: 'white' }}
+            InputProps={{
+              style: {
+                backgroundColor: 'white'
+              }
+            }}
+          />
+
           <FormControl 
             fullWidth 
             sx={{ 
@@ -207,10 +306,12 @@ function Products({ addToCart }) {
         </Paper>
       </Grid>
 
-      {products.map((product) => {
+      {/* Products grid */}
+      {filteredProducts.map((product) => { // Changed from products to filteredProducts
         const dimensions = productDimensions[product.id] || { length: '', width: '' };
         const thickness = productThickness[product.id] || '';
-        
+        const quantity = quantities[product.id] || 1;
+
         return (
           <Grid item xs={12} sm={6} md={4} key={product.id}>
             <Card sx={{ 
@@ -223,6 +324,7 @@ function Products({ addToCart }) {
                 boxShadow: 4
               }
             }}>
+              {/* Card content */}
               <CardMedia
                 component="img"
                 height="200"
@@ -235,13 +337,12 @@ function Products({ addToCart }) {
                   {product.name}
                 </Typography>
                 <Typography variant="body2" color="text.secondary" gutterBottom>
-                  Base Price: ₹{product.basePrice}
-                </Typography>
-                <Typography variant="body2" color="text.secondary" gutterBottom>
                   {product.density ? `Density: ${product.density}` : `Type: ${product.type}`}
                 </Typography>
                 
+                {/* Input fields */}
                 <Grid container spacing={2} sx={{ mt: 1 }}>
+                  {/* Length and width fields */}
                   <Grid item xs={6}>
                     <TextField
                       label={`Length (${selectedUnit})`}
@@ -262,7 +363,20 @@ function Products({ addToCart }) {
                       variant="outlined"
                     />
                   </Grid>
-                  
+
+                  {/* Quantity field */}
+                  <Grid item xs={12}>
+                    <TextField
+                      label="Quantity"
+                      type="number"
+                      fullWidth
+                      value={quantity}
+                      onChange={(e) => updateQuantity(product.id, Math.max(1, parseInt(e.target.value) || 1))}
+                      variant="outlined"
+                      InputProps={{ inputProps: { min: 1 } }}
+                    />
+                  </Grid>
+
                   {product.density && (
                     <Grid item xs={6}>
                       <TextField
@@ -297,27 +411,23 @@ function Products({ addToCart }) {
                 </Grid>
     
                 <Typography variant="h6" sx={{ mt: 3, mb: 2 }}>
-                  Total Price: ₹{calculatePrice(product.id, product.basePrice)}
+                  Total Price: ₹{calculatePrice(product.id)}  
                 </Typography>
     
                 <Button 
                   variant="contained" 
                   fullWidth 
                   color="primary"
-                  sx={{ 
-                    mt: 'auto',
-                    textTransform: 'none',
-                    py: 1.5
-                  }}
+                  sx={{ mt: 2 }}
                   onClick={() => addToCart({
                     ...product,
                     dimensions: dimensions,
                     thickness: thickness,
                     density: selectedDensities[product.id],
+                    quantity: quantity,
                     unit: selectedUnit,
-                    totalPrice: calculatePrice(product.id, product.basePrice)
-                  })}
-                  disabled={!dimensions.length || !dimensions.width || !thickness || !selectedDensities[product.id]}
+                    totalPrice: calculatePrice(product.id)
+                  }, selectedFoamType)}
                 >
                   Add to Cart
                 </Button>
