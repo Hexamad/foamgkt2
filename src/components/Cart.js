@@ -5,10 +5,13 @@ import {
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
+import { jsPDF } from "jspdf";
+import autoTable from 'jspdf-autotable';
+import { calculateMattressPrice, calculateTotalPrice } from '../utils/mattressCalculations';
 
 function Cart({ cartItems, removeFromCart, onClose }) {
   const calculateTotal = () => {
-    return cartItems.reduce((total, item) => total + item.totalPrice, 0);
+    return calculateTotalPrice(cartItems);
   };
 
   const generatePDF = () => {
@@ -23,25 +26,30 @@ function Cart({ cartItems, removeFromCart, onClose }) {
     doc.setFontSize(18);
     doc.text('Gurukrupa Traders - Order Summary', 50, 20);
 
-    // Add table using autoTable directly
+    // Add table using autoTable
     autoTable(doc, {
       startY: 40,
       head: [['Product', 'Dimensions', 'Thickness', 'Density', 'Quantity', 'Price']],
-      body: cartItems.map(item => [
-        item.name,
-        `${item.dimensions.length}x${item.dimensions.width} ${item.unit}`,
-        `${item.thickness}mm`,
-        item.density,
-        item.quantity,
-        `₹${item.totalPrice}`
-      ]),
+      body: cartItems.map(item => {
+        const itemPrice = calculateMattressPrice(item.dimensions, item.thickness, item.density);
+        const totalPrice = itemPrice * item.quantity;
+        return [
+          item.name,
+          `${item.dimensions.length}x${item.dimensions.width} ${item.unit}`,
+          `${item.thickness}mm`,
+          item.density,
+          item.quantity,
+          `₹${totalPrice}`
+        ];
+      }),
       theme: 'grid',
       styles: { fontSize: 10 }
     });
 
     // Add total
     doc.setFontSize(14);
-    doc.text(`Total: ₹${calculateTotal()}`, 10, doc.lastAutoTable.finalY + 20);
+    const total = calculateTotal();  // Call the function here
+    doc.text(`Total: ₹${total}`, 10, doc.lastAutoTable.finalY + 20);
 
     // Save and share
     const pdfBlob = doc.output('blob');
