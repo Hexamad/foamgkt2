@@ -1,7 +1,7 @@
 import { foamProducts } from '../data/foamProducts';
 
 export const densityRates = {
-  '9': 0.00361,
+  '9': 0.305555556,
   '18': 0.00361,
   '23': 0.00434,
   '28': 0.00477,
