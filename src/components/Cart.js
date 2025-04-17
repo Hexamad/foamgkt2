@@ -1,124 +1,99 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { 
   Grid, Card, CardContent, Typography, Button, IconButton, Box, 
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper 
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
-import { jsPDF } from "jspdf";
-import autoTable from 'jspdf-autotable';
-import { calculateMattressPrice, calculateTotalPrice } from '../utils/mattressCalculations';
+import html2pdf from 'html2pdf.js';
+import { calculatePrice, calculateTotalPrice } from '../utils/calculations';
 
 function Cart({ cartItems, removeFromCart, onClose }) {
-  const calculateTotal = () => {
-    return calculateTotalPrice(cartItems);
-  };
+  const pdfRef = useRef();
 
   const generatePDF = () => {
-    const doc = new jsPDF();
-    
-    // Add logo
-    const logo = new Image();
-    logo.src = '/images/gktLogo.png';
-    doc.addImage(logo, 'PNG', 10, 10, 30, 30);
+    const element = pdfRef.current;
+    const opt = {
+      margin: 1,
+      filename: 'GurukrupaTraders-OrderSummary.pdf',
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2 },
+      jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+    };
 
-    // Add title
-    doc.setFontSize(18);
-    doc.text('Gurukrupa Traders - Order Summary', 50, 20);
-
-    // Add table using autoTable
-    autoTable(doc, {
-      startY: 40,
-      head: [['Product', 'Dimensions', 'Thickness', 'Density', 'Quantity', 'Price']],
-      body: cartItems.map(item => {
-        const itemPrice = calculateMattressPrice(item.dimensions, item.thickness, item.density);
-        const totalPrice = itemPrice * item.quantity;
-        return [
-          item.name,
-          `${item.dimensions.length}x${item.dimensions.width} ${item.unit}`,
-          `${item.thickness}mm`,
-          item.density,
-          item.quantity,
-          `₹${totalPrice}`
-        ];
-      }),
-      theme: 'grid',
-      styles: { fontSize: 10 }
-    });
-
-    // Add total
-    doc.setFontSize(14);
-    const total = calculateTotal();  // Call the function here
-    doc.text(`Total: ₹${total}`, 10, doc.lastAutoTable.finalY + 20);
-
-    // Save and share
-    const pdfBlob = doc.output('blob');
-    const pdfUrl = URL.createObjectURL(pdfBlob);
-    
-    // WhatsApp sharing
-    const whatsappUrl = `https://wa.me/919604003322?text=Here's%20my%20order%20summary%20from%20Gurukrupa%20Traders&attachment=${pdfUrl}`;
-    window.open(whatsappUrl, '_blank');
+    html2pdf().from(element).set(opt).save();
   };
 
   return (
     <Box>
-      <TableContainer component={Paper}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>Product</TableCell>
-              <TableCell>Dimensions</TableCell>
-              <TableCell>Thickness</TableCell>
-              <TableCell>Density</TableCell>
-              <TableCell>Quantity</TableCell>
-              <TableCell>Price</TableCell>
-              <TableCell>Action</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {cartItems.map((item, index) => (
-              <TableRow key={index}>
-                <TableCell>{item.name}</TableCell>
-                <TableCell>{item.dimensions.length}x{item.dimensions.width} {item.unit}</TableCell>
-                <TableCell>{item.thickness}mm</TableCell>
-                <TableCell>{item.density}</TableCell>
-                <TableCell>{item.quantity}</TableCell>
-                <TableCell>₹{item.totalPrice}</TableCell>
-                <TableCell>
-                  <IconButton 
-                    color="error" 
-                    onClick={() => removeFromCart(index)}
-                    aria-label="delete"
-                  >
-                    <DeleteIcon />
-                  </IconButton>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+      <Box ref={pdfRef}>
+        <Box sx={{ mb: 3, display: 'flex', alignItems: 'center' }}>
+          <img 
+            src="/images/gktLogo.png" 
+            alt="Gurukrupa Traders Logo" 
+            style={{ width: '60px', marginRight: '20px' }}
+          />
+          <Typography variant="h5">Gurukrupa Traders - Order Summary</Typography>
+        </Box>
 
-      <Box sx={{ mt: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Typography variant="h6">
-          Total: ₹{calculateTotal()}
-        </Typography>
-        
+        <TableContainer component={Paper}>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>Product</TableCell>
+                <TableCell>Dimensions</TableCell>
+                <TableCell>Thickness</TableCell>
+                <TableCell>Density</TableCell>
+                <TableCell>Quantity</TableCell>
+                <TableCell>Price</TableCell>
+                {!pdfRef.current && <TableCell>Action</TableCell>}
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {cartItems.map((item, index) => (
+                <TableRow key={index}>
+                  <TableCell>{item.name}</TableCell>
+                  <TableCell>{item.dimensions.length}x{item.dimensions.width} {item.unit}</TableCell>
+                  <TableCell>{item.thickness}mm</TableCell>
+                  <TableCell>{item.density}</TableCell>
+                  <TableCell>{item.quantity}</TableCell>
+                  <TableCell>₹{item.totalPrice}</TableCell>
+                  {!pdfRef.current && (
+                    <TableCell>
+                      <IconButton 
+                        color="error" 
+                        onClick={() => removeFromCart(index)}
+                        aria-label="delete"
+                      >
+                        <DeleteIcon />
+                      </IconButton>
+                    </TableCell>
+                  )}
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+
+        <Box sx={{ mt: 3, display: 'flex', justifyContent: 'flex-end' }}>
+          <Typography variant="h6">
+            Total: ₹{calculateTotalPrice(cartItems)}
+          </Typography>
+        </Box>
+      </Box>
+
+      <Box sx={{ mt: 3, display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
         <Button 
           variant="contained" 
           color="primary" 
           startIcon={<PictureAsPdfIcon />}
           onClick={generatePDF}
         >
-          Share via WhatsApp
+          Download PDF
         </Button>
-      </Box>
-
-      <Box sx={{ mt: 2, display: 'flex', justifyContent: 'flex-end' }}>
         <Button 
           variant="outlined" 
           onClick={onClose}
-          sx={{ mr: 2 }}
         >
           Close
         </Button>

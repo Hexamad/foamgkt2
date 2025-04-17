@@ -5,6 +5,8 @@ import {
   Box // Add this import
 } from '@mui/material';
 
+import { calculatePrice, unitConversions } from '../utils/calculations';
+
 const products = [
   {
     id: 1,
@@ -126,34 +128,6 @@ const products = [
   }
 ];
 
-const unitConversions = {
-  mm: 1,
-  cm: 10,
-  inch: 25.4,
-  feet: 304.8
-};
-
-const densityRates = {
-  '9': 0.00361,
-  '18': 0.00361,
-  '23': 0.00434,
-  '28': 0.00477,
-  '32': 0.00606,
-  '40': 0.00722,
-  '50': 0.00848,
-  '55': 0.00900,
-  '60': 0.00950,
-  '65': 0.01000,
-  '70': 0.01050,
-  '75': 0.01100,
-  '80': 0.01150,
-  '90': 0.01200,
-  '100': 0.01250,
-  '110': 0.01300
-};
-
-import { foamProducts } from '../data/foamProducts';
-
 // Add quantity state
 function Products({ addToCart }) {
   const [selectedUnit, setSelectedUnit] = useState('mm');
@@ -205,39 +179,27 @@ function Products({ addToCart }) {
     }));
   };
 
-  const calculatePrice = (productId) => {
+  const calculatePriceForProduct = (productId) => {
     const dimensions = productDimensions[productId] || { length: '', width: '' };
     const thickness = productThickness[productId];
     const quantity = quantities[productId] || 1;
     const density = selectedDensities[productId];
-
-    if (!dimensions.length || !dimensions.width || !thickness || !density) return 0;
     
-    const lengthMM = dimensions.length * unitConversions[selectedUnit];
-    const widthMM = dimensions.width * unitConversions[selectedUnit];
-    const lengthInches = lengthMM / 25.4;
-    const widthInches = widthMM / 25.4;
-    const area = lengthInches * widthInches;
-    
-    // Get rate based on product type
-    let rate;
+    let foamType = selectedFoamType;
     switch (productId) {
-      case 3: // Rebonded Foam
-        rate = densityRates[density] || 0;
+      case 3:
+        foamType = 'REBONDED';
         break;
-      case 5: // Memory Foam
-      case 6: // Gel Memory Foam
-        rate = foamProducts.MEMORY_FOAM.ratePerMM[density] || 0;
+      case 5:
+      case 6:
+        foamType = 'MEMORY_FOAM';
         break;
-      case 12: // Convulated Foam
-        rate = foamProducts.ALL_FOAM.ratePerMM[density] || 0;
+      case 12:
+        foamType = 'CONVULATED';
         break;
-      default:
-        rate = foamProducts[selectedFoamType].ratePerMM[density] || 0;
     }
     
-    const price = area * thickness * rate * quantity;
-    return Math.round(price);
+    return calculatePrice(dimensions, thickness, density, quantity, selectedUnit, foamType);
   };
 
   // Filter products based on search term
@@ -366,15 +328,43 @@ function Products({ addToCart }) {
 
                   {/* Quantity field */}
                   <Grid item xs={12}>
-                    <TextField
-                      label="Quantity"
-                      type="number"
-                      fullWidth
-                      value={quantity}
-                      onChange={(e) => updateQuantity(product.id, Math.max(1, parseInt(e.target.value) || 1))}
-                      variant="outlined"
-                      InputProps={{ inputProps: { min: 1 } }}
-                    />
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <Button 
+                        variant="outlined" 
+                        size="small"
+                        onClick={() => updateQuantity(product.id, Math.max(1, (quantities[product.id] || 1) - 1))}
+                        sx={{ minWidth: '40px', height: '40px' }}
+                      >
+                        -
+                      </Button>
+                      <TextField
+                        label="Quantity"
+                        type="number"
+                        fullWidth
+                        value={quantity}
+                        onChange={(e) => {
+                          const val = e.target.value === '' ? 1 : Math.max(1, parseInt(e.target.value) || 1);
+                          updateQuantity(product.id, val);
+                        }}
+                        variant="outlined"
+                        InputProps={{ 
+                          inputProps: { 
+                            min: 1,
+                            inputMode: 'numeric',
+                            pattern: '[0-9]*',
+                            style: { textAlign: 'center' }
+                          }
+                        }}
+                      />
+                      <Button 
+                        variant="outlined"
+                        size="small"
+                        onClick={() => updateQuantity(product.id, (quantities[product.id] || 1) + 1)}
+                        sx={{ minWidth: '40px', height: '40px' }}
+                      >
+                        +
+                      </Button>
+                    </Box>
                   </Grid>
 
                   {product.density && (
@@ -411,7 +401,7 @@ function Products({ addToCart }) {
                 </Grid>
     
                 <Typography variant="h6" sx={{ mt: 3, mb: 2 }}>
-                  Total Price: ₹{calculatePrice(product.id)}  
+                  Total Price: ₹{calculatePriceForProduct(product.id)}  
                 </Typography>
     
                 <Button 
@@ -426,7 +416,7 @@ function Products({ addToCart }) {
                     density: selectedDensities[product.id],
                     quantity: quantity,
                     unit: selectedUnit,
-                    totalPrice: calculatePrice(product.id)
+                    totalPrice: calculatePriceForProduct(product.id)
                   }, selectedFoamType)}
                 >
                   Add to Cart
