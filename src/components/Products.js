@@ -2,10 +2,11 @@ import React, { useState } from 'react';
 import { 
   Grid, Card, CardContent, CardMedia, Typography, Button,
   FormControl, InputLabel, Select, MenuItem, TextField, Paper,
-  Box // Add this import
+  Box
 } from '@mui/material';
 
 import { calculatePrice, unitConversions } from '../utils/calculations';
+import { foamProducts } from '../data/foamProducts';  // Add this import
 
 const products = [
   {
@@ -185,21 +186,42 @@ function Products({ addToCart }) {
     const quantity = quantities[productId] || 1;
     const density = selectedDensities[productId];
     
-    let foamType = selectedFoamType;
+    // Map product IDs to their correct foam types
+    let foamType;
     switch (productId) {
-      case 3:
-        foamType = 'REBONDED';
+      case 1:
+        foamType = 'LD_FOAM';
+        break;
+      case 2:
+        foamType = 'ALL_FOAM';
+        break;
+      case 4:
+        foamType = 'SUPER_SOFT';
         break;
       case 5:
       case 6:
         foamType = 'MEMORY_FOAM';
         break;
-      case 12:
-        foamType = 'CONVULATED';
+      case 10:
+        foamType = 'HR_FOAM';
         break;
+      default:
+        foamType = 'ALL_FOAM';
     }
+
+    if (!dimensions.length || !dimensions.width || !thickness || !density) return 0;
     
-    return calculatePrice(dimensions, thickness, density, quantity, selectedUnit, foamType);
+    const lengthMM = dimensions.length * unitConversions[selectedUnit];
+    const widthMM = dimensions.width * unitConversions[selectedUnit];
+    const lengthInches = lengthMM / 25.4;
+    const widthInches = widthMM / 25.4;
+    const area = lengthInches * widthInches;
+    
+    // Get rate from foamProducts based on foam type and density
+    const rate = foamProducts[foamType]?.ratePerMM[density] || 0;
+    
+    const price = area * thickness * rate * quantity;
+    return Math.round(price);
   };
 
   // Filter products based on search term
@@ -429,5 +451,4 @@ function Products({ addToCart }) {
     </Grid>
   );
 }
-
 export default Products;

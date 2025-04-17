@@ -14,7 +14,7 @@ function Cart({ cartItems, removeFromCart, onClose }) {
   const generatePDF = () => {
     const element = pdfRef.current;
     const opt = {
-      margin: 1,
+      margin: [1, 1, 2, 1], // Increased bottom margin for footer
       filename: 'GurukrupaTraders-OrderSummary.pdf',
       image: { type: 'jpeg', quality: 0.98 },
       html2canvas: { scale: 2 },
@@ -22,6 +22,10 @@ function Cart({ cartItems, removeFromCart, onClose }) {
     };
 
     html2pdf().from(element).set(opt).save();
+  };
+
+  const getTotalPrice = () => {
+    return cartItems.reduce((total, item) => total + (Number(item.totalPrice) || 0), 0);
   };
 
   return (
@@ -77,7 +81,26 @@ function Cart({ cartItems, removeFromCart, onClose }) {
 
         <Box sx={{ mt: 3, display: 'flex', justifyContent: 'flex-end' }}>
           <Typography variant="h6">
-            Total: ₹{calculateTotalPrice(cartItems)}
+            Total: ₹{getTotalPrice()}
+          </Typography>
+        </Box>
+
+        {/* Add Footer */}
+        <Box sx={{ 
+          mt: 4, 
+          pt: 2, 
+          borderTop: '1px solid #ccc',
+          textAlign: 'center'
+        }}>
+          <Typography variant="body2" color="text.secondary">
+            Contact: +91-9665559941
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Website: https://gurukrupatrader.com
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+            Sr. No. 132, Paladiya Industrial Estate, Western Express Highway, Phata, 
+            Vasai East, Vasai- Virar, Pelhar, Maharashtra 401208
           </Typography>
         </Box>
       </Box>

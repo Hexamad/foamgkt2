@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Container, AppBar, Toolbar, Typography, IconButton, Badge, Modal, Box } from '@mui/material';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import Products from './components/Products';
-import Cart from './components/Cart';
+import Cart from './components/cart';
 import { ThemeProvider } from '@mui/material/styles';
 import { theme } from './theme';
 

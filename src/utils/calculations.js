@@ -66,16 +66,20 @@ export const calculatePrice = (dimensions, thickness, density, quantity = 1, sel
   return Math.round(price);
 };
 
-export const calculateTotalPrice = (items) => {
-  return items.reduce((total, item) => {
-    const itemPrice = calculatePrice(
-      item.dimensions,
-      item.thickness,
-      item.density,
-      item.quantity,
-      item.unit,
-      item.foamType
-    );
-    return total + itemPrice;
+// Add this calculation utility
+export const calculateTotalPrice = (cartItems) => {
+  return cartItems.reduce((total, item) => {
+    if (item.totalPrice) {
+      return total + item.totalPrice;
+    }
+    
+    // Fallback calculation if totalPrice is not available
+    const dimensions = item.dimensions;
+    const thickness = item.thickness;
+    const density = item.density;
+    const quantity = item.quantity || 1;
+    const unit = item.unit || 'mm';
+    
+    return total + calculatePrice(dimensions, thickness, density, quantity, unit, item.foamType);
   }, 0);
 };
