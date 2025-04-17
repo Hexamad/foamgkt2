@@ -14,7 +14,7 @@ export const foamProducts = {
   LD_FOAM: {
     densities: ['9'],
     ratePerMM: {
-      '9': 0.00361
+      '9': 0.0021219136,
     }
   },
   HR_FOAM: {
