@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Container, AppBar, Toolbar, Typography, IconButton, Badge, Modal, Box } from '@mui/material';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import Products from './components/Products';
-import Cart from './components/Cart'; // Ensure the import matches the file name
+import Cart from './components/Cart';
 import { ThemeProvider } from '@mui/material/styles';
 import { theme } from './theme';
 
@@ -13,7 +13,8 @@ function App() {
   const addToCart = (product, foamType) => {
     setCartItems(prev => [...prev, {
       ...product,
-      foamType: foamType
+      foamType: foamType,
+      unit: 'inch'  // Set default unit to inch
     }]);
   };
 

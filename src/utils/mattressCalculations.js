@@ -1,21 +1,16 @@
-export const calculateMattressPrice = (dimensions, thickness, density) => {
-  // Convert dimensions to meters
-  const length = (dimensions.length / 100).toFixed(4);
-  const width = (dimensions.width / 100).toFixed(4);
+export const calculateMattressPrice = (dimensions, thickness, density, ratePerMM) => {
+  // Convert dimensions to meters and maintain precision
+  const length = parseFloat((dimensions.length / 100));
+  const width = parseFloat((dimensions.width / 100));
   
-  // Convert thickness to meters
-  const thicknessInM = (thickness / 1000).toFixed(4);
+  // Calculate area in square meters
+  const area = length * width;
   
-  // Calculate volume in cubic meters
-  const volume = (length * width * thicknessInM).toFixed(4);
+  // Calculate price using rate per mm
+  const price = area * thickness * ratePerMM;
   
-  // Density is in kg/m³
-  const weight = (volume * density).toFixed(4);
-  
-  // Price per kg (you may want to make this configurable)
-  const pricePerKg = 250;
-  
-  return Number((weight * pricePerKg).toFixed(4));
+  // Return price with 4 decimal places without rounding
+  return parseFloat(price.toFixed(4));
 };
 
 export const calculateTotalPrice = (items) => {
@@ -23,8 +18,10 @@ export const calculateTotalPrice = (items) => {
     const itemPrice = calculateMattressPrice(
       item.dimensions,
       item.thickness,
-      item.density
+      item.density,
+      item.ratePerMM
     );
-    return Number((total + (itemPrice * item.quantity)).toFixed(4));
+    const itemTotal = itemPrice * item.quantity;
+    return parseFloat((total + itemTotal).toFixed(4));
   }, 0);
 };

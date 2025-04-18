@@ -131,7 +131,7 @@ const products = [
 
 // Add quantity state
 function Products({ addToCart }) {
-  const [selectedUnit, setSelectedUnit] = useState('mm');
+  const [selectedUnit, setSelectedUnit] = useState('inch');  // Changed default to 'inch'
   const [productDimensions, setProductDimensions] = useState({});
   const [productThickness, setProductThickness] = useState({});
   const [selectedDensities, setSelectedDensities] = useState({});
@@ -221,7 +221,7 @@ function Products({ addToCart }) {
     const rate = foamProducts[foamType]?.ratePerMM[density] || 0;
     
     const price = area * thickness * rate * quantity;
-    return Math.round(price);
+    return parseFloat(price.toFixed(4));  // Changed from Math.round(price)
   };
 
   // Filter products based on search term
@@ -281,10 +281,11 @@ function Products({ addToCart }) {
               value={selectedUnit}
               onChange={(e) => setSelectedUnit(e.target.value)}
             >
-              <MenuItem value="mm">Millimeter (mm)</MenuItem>
-              <MenuItem value="cm">Centimeter (cm)</MenuItem>
               <MenuItem value="inch">Inch</MenuItem>
               <MenuItem value="feet">Feet</MenuItem>
+              <MenuItem value="mm">Millimeter (mm)</MenuItem>
+              <MenuItem value="cm">Centimeter (cm)</MenuItem>
+              
             </Select>
           </FormControl>
         </Paper>

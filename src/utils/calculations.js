@@ -35,14 +35,14 @@ export const calculatePrice = (dimensions, thickness, density, quantity = 1, sel
   // Validate inputs
   if (!dimensions?.length || !dimensions?.width || !thickness || !density) return 0;
   
-  // Convert dimensions to inches
-  const lengthMM = dimensions.length * unitConversions[selectedUnit];
-  const widthMM = dimensions.width * unitConversions[selectedUnit];
-  const lengthInches = lengthMM / 25.4;
-  const widthInches = widthMM / 25.4;
+  // Convert dimensions to inches with precision
+  const lengthMM = parseFloat((dimensions.length * unitConversions[selectedUnit]).toFixed(4));
+  const widthMM = parseFloat((dimensions.width * unitConversions[selectedUnit]).toFixed(4));
+  const lengthInches = parseFloat((lengthMM / 25.4).toFixed(4));
+  const widthInches = parseFloat((widthMM / 25.4).toFixed(4));
   
   // Calculate area in square inches
-  const area = lengthInches * widthInches;
+  const area = parseFloat((lengthInches * widthInches).toFixed(4));
   
   // Get rate based on foam type and density
   let rate;
@@ -61,16 +61,15 @@ export const calculatePrice = (dimensions, thickness, density, quantity = 1, sel
       rate = foamProducts[foamType]?.ratePerMM[density] || 0;
   }
   
-  // Calculate final price
-  const price = area * thickness * rate * quantity;
-  return Math.round(price);
+  // Calculate final price without rounding
+  const price = parseFloat((area * thickness * rate * quantity).toFixed(4));
+  return price;
 };
 
-// Add this calculation utility
 export const calculateTotalPrice = (cartItems) => {
-  return cartItems.reduce((total, item) => {
+  return parseFloat(cartItems.reduce((total, item) => {
     if (item.totalPrice) {
-      return total + item.totalPrice;
+      return parseFloat((total + item.totalPrice).toFixed(4));
     }
     
     // Fallback calculation if totalPrice is not available
@@ -80,6 +79,6 @@ export const calculateTotalPrice = (cartItems) => {
     const quantity = item.quantity || 1;
     const unit = item.unit || 'mm';
     
-    return total + calculatePrice(dimensions, thickness, density, quantity, unit, item.foamType);
-  }, 0);
+    return parseFloat((total + calculatePrice(dimensions, thickness, density, quantity, unit, item.foamType)).toFixed(4));
+  }, 0).toFixed(4));
 };
