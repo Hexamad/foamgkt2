@@ -9,17 +9,47 @@ import { theme } from './theme';
 function App() {
   const [cartItems, setCartItems] = useState([]);
   const [cartOpen, setCartOpen] = useState(false);
+  // Add customer information state
+  const [customerInfo, setCustomerInfo] = useState({
+    name: '',
+    phone: '',
+    address: '',
+    referenceNumber: ''
+  });
 
+  // Generate a reference number when adding first item to cart
   const addToCart = (product, foamType) => {
-    setCartItems(prev => [...prev, {
+    const newItems = [...cartItems, {
       ...product,
       foamType: foamType,
       unit: 'inch'  // Set default unit to inch
-    }]);
+    }];
+    
+    setCartItems(newItems);
+    
+    // Generate reference number if this is the first item and no reference exists
+    if (newItems.length === 1 && !customerInfo.referenceNumber) {
+      const today = new Date();
+      const randomNum = Math.floor(1000 + Math.random() * 9000); // 4-digit random number
+      const refNumber = `GKT2025-${today.getMonth()+1}${today.getDate()}-${randomNum}`;
+      
+      setCustomerInfo(prev => ({
+        ...prev,
+        referenceNumber: refNumber
+      }));
+    }
   };
 
   const removeFromCart = (index) => {
     setCartItems(prev => prev.filter((_, i) => i !== index));
+  };
+
+  // Add function to update customer information
+  const updateCustomerInfo = (info) => {
+    setCustomerInfo(prev => ({
+      ...prev,
+      ...info
+    }));
   };
 
   const modalStyle = {
@@ -60,13 +90,19 @@ function App() {
         </AppBar>
         <Toolbar /> {/* Spacing for fixed AppBar */}
         <Container sx={{ py: 4 }}>
-          <Products addToCart={addToCart} />
+          <Products addToCart={addToCart} updateCustomerInfo={updateCustomerInfo} customerInfo={customerInfo} />
           <Modal
             open={cartOpen}
             onClose={() => setCartOpen(false)}
           >
             <Box sx={modalStyle}>
-              <Cart cartItems={cartItems} removeFromCart={removeFromCart} onClose={() => setCartOpen(false)} />
+              <Cart 
+                cartItems={cartItems} 
+                removeFromCart={removeFromCart} 
+                onClose={() => setCartOpen(false)} 
+                customerInfo={customerInfo}
+                updateCustomerInfo={updateCustomerInfo}
+              />
             </Box>
           </Modal>
         </Container>

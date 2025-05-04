@@ -1,21 +1,24 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { 
   Grid, Card, CardContent, Typography, Button, IconButton, Box, 
-  Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper 
+  Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper,
+  Divider
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 import html2pdf from 'html2pdf.js';
 import { calculatePrice, calculateTotalPrice } from '../utils/calculations';
 
-function Cart({ cartItems, removeFromCart, onClose }) {
+function Cart({ cartItems, removeFromCart, onClose, customerInfo, updateCustomerInfo }) {
   const pdfRef = useRef();
 
   const generatePDF = () => {
     const element = pdfRef.current;
     const opt = {
       margin: [1, 1, 2, 1], // Increased bottom margin for footer
-      filename: 'GurukrupaTraders-OrderSummary.pdf',
+      filename: customerInfo.referenceNumber 
+        ? `GurukrupaTraders-${customerInfo.referenceNumber}.pdf` 
+        : 'GurukrupaTraders-Estimator.pdf',
       image: { type: 'jpeg', quality: 0.98 },
       html2canvas: { scale: 2 },
       jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
@@ -31,14 +34,59 @@ function Cart({ cartItems, removeFromCart, onClose }) {
   return (
     <Box>
       <Box ref={pdfRef}>
-        <Box sx={{ mb: 3, display: 'flex', alignItems: 'center' }}>
-          <img 
-            src="/images/gktLogo.png" 
-            alt="Gurukrupa Traders Logo" 
-            style={{ width: '60px', marginRight: '20px' }}
-          />
-          <Typography variant="h5">Gurukrupa Traders - Order Summary</Typography>
+        <Box sx={{ mb: 3, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <img 
+              src="/images/gktLogo.png" 
+              alt="Gurukrupa Traders Logo" 
+              style={{ width: '60px', marginRight: '20px' }}
+            />
+            <Typography variant="h5">
+              <Box component="span" sx={{ color: 'red', fontWeight: 'bold' }}>
+                Gurukrupa
+              </Box>{' '}
+              <Box component="span" sx={{ color: 'darkblue', fontWeight: 'bold' }}>
+                Traders
+              </Box>
+              {' - Estimator/Price Calculator'}
+            </Typography>
+          </Box>
+          {customerInfo.referenceNumber && (
+            <Typography variant="h6" color="primary">
+              Ref: {customerInfo.referenceNumber}
+            </Typography>
+          )}
         </Box>
+
+        {/* Add Customer Information Section */}
+        {(customerInfo.name || customerInfo.phone || customerInfo.address) && (
+          <Box sx={{ mb: 3, p: 2, bgcolor: '#f8f8f8', borderRadius: 1 }}>
+            <Typography variant="h6" gutterBottom>Customer Information</Typography>
+            <Grid container spacing={2}>
+              {customerInfo.name && (
+                <Grid item xs={12} sm={4}>
+                  <Typography variant="body1">
+                    <strong>Name:</strong> {customerInfo.name}
+                  </Typography>
+                </Grid>
+              )}
+              {customerInfo.phone && (
+                <Grid item xs={12} sm={4}>
+                  <Typography variant="body1">
+                    <strong>Phone:</strong> {customerInfo.phone}
+                  </Typography>
+                </Grid>
+              )}
+              {customerInfo.address && (
+                <Grid item xs={12} sm={4}>
+                  <Typography variant="body1">
+                    <strong>Address:</strong> {customerInfo.address}
+                  </Typography>
+                </Grid>
+              )}
+            </Grid>
+          </Box>
+        )}
 
         <TableContainer component={Paper}>
           <Table>

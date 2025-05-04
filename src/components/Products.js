@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Grid, Card, CardContent, CardMedia, Typography, Button,
   FormControl, InputLabel, Select, MenuItem, TextField, Paper,
-  Box
+  Box, Divider
 } from '@mui/material';
 
 import { calculatePrice, unitConversions } from '../utils/calculations';
@@ -130,7 +130,8 @@ const products = [
 ];
 
 // Add quantity state
-function Products({ addToCart }) {
+// Update the function signature to accept the new props
+function Products({ addToCart, updateCustomerInfo, customerInfo }) {
   const [selectedUnit, setSelectedUnit] = useState('inch');  // Changed default to 'inch'
   const [productDimensions, setProductDimensions] = useState({});
   const [productThickness, setProductThickness] = useState({});
@@ -138,6 +139,21 @@ function Products({ addToCart }) {
   const [quantities, setQuantities] = useState({});
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedFoamType, setSelectedFoamType] = useState('ALL_FOAM'); // Add this line
+  
+  // Add local state for customer info
+  const [localCustomerInfo, setLocalCustomerInfo] = useState(customerInfo);
+  
+  // Update local state when props change
+  useEffect(() => {
+    setLocalCustomerInfo(customerInfo);
+  }, [customerInfo]);
+  
+  // Handle customer info changes
+  const handleCustomerInfoChange = (field, value) => {
+    const updatedInfo = { ...localCustomerInfo, [field]: value };
+    setLocalCustomerInfo(updatedInfo);
+    updateCustomerInfo(updatedInfo);
+  };
 
   const updateDimensions = (productId, field, value) => {
     setProductDimensions(prev => ({
@@ -246,6 +262,90 @@ function Products({ addToCart }) {
             </Box>
           </Typography>
           
+          // In the Customer Information Form section, add buttons after the form fields
+          
+          {/* Customer Information Form - Added before search bar */}
+          <Box sx={{ mb: 3, p: 2, bgcolor: '#f5f5f5', borderRadius: 1 }}>
+            <Typography variant="h6" sx={{ mb: 2, color: '#333' }}>
+              Customer Information
+            </Typography>
+            
+            <Grid container spacing={2}>
+              <Grid item xs={12} md={4}>
+                <TextField
+                  label="Customer Name"
+                  fullWidth
+                  value={localCustomerInfo.name}
+                  onChange={(e) => handleCustomerInfoChange('name', e.target.value)}
+                  variant="outlined"
+                  sx={{ bgcolor: 'white' }}
+                />
+              </Grid>
+              <Grid item xs={12} md={4}>
+                <TextField
+                  label="Phone Number"
+                  fullWidth
+                  value={localCustomerInfo.phone}
+                  onChange={(e) => handleCustomerInfoChange('phone', e.target.value)}
+                  variant="outlined"
+                  sx={{ bgcolor: 'white' }}
+                />
+              </Grid>
+              <Grid item xs={12} md={4}>
+                <TextField
+                  label="Address"
+                  fullWidth
+                  value={localCustomerInfo.address}
+                  onChange={(e) => handleCustomerInfoChange('address', e.target.value)}
+                  variant="outlined"
+                  multiline
+                  rows={1}
+                  sx={{ bgcolor: 'white' }}
+                />
+              </Grid>
+            </Grid>
+            
+            {/* Add Save and Clear buttons */}
+            <Box sx={{ mt: 2, display: 'flex', justifyContent: 'flex-start', gap: 2 }}>
+              <Button 
+                variant="contained" 
+                color="primary"
+                onClick={() => {
+                  // Save functionality is already handled by the state updates
+                  // Just provide visual feedback
+                  alert('Customer information saved!');
+                }}
+              >
+                Save Details
+              </Button>
+              <Button 
+                variant="outlined" 
+                color="error"
+                onClick={() => {
+                  // Clear all customer information
+                  updateCustomerInfo({
+                    name: '',
+                    phone: '',
+                    address: '',
+                    referenceNumber: ''
+                  });
+                }}
+              >
+                Clear Details
+              </Button>
+            </Box>
+            
+            {customerInfo.referenceNumber && (
+              <Box sx={{ mt: 2, display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>
+                <Typography variant="body1" sx={{ color: '#333', fontWeight: 'bold' }}>
+                  Reference Number: <span style={{ color: '#1976d2' }}>{customerInfo.referenceNumber}</span>
+                </Typography>
+              </Box>
+            )}
+          </Box>
+          
+          <Divider sx={{ my: 2 }} />
+          
           {/* Search Bar */}
           <TextField
             fullWidth
@@ -261,6 +361,7 @@ function Products({ addToCart }) {
             }}
           />
 
+          {/* Rest of the component remains unchanged */}
           <FormControl 
             fullWidth 
             sx={{ 
@@ -291,7 +392,7 @@ function Products({ addToCart }) {
         </Paper>
       </Grid>
 
-      {/* Products grid */}
+      {/* Products grid - remains unchanged */}
       {filteredProducts.map((product) => { // Changed from products to filteredProducts
         const dimensions = productDimensions[product.id] || { length: '', width: '' };
         const thickness = productThickness[product.id] || '';
@@ -452,4 +553,5 @@ function Products({ addToCart }) {
     </Grid>
   );
 }
+
 export default Products;
