@@ -44,7 +44,7 @@ const products = [
     image: 'https://5.imimg.com/data5/RA/FY/MY-56919196/super-soft-foam-sheet.jpg',
     thicknessOptions: [2,3,4,5,6,7,8,9,10,12,15,18,19, 20,21, 25, 30,35, 40,45, 50,70, 75,80,85,90,95, 100,125, 150, 200, 250],
     category: 'Mattress Raw Materials',
-    density: '24, 28, 32, 40, 41'
+    density: '24, 28, 32, 40, 42'
   },
   {
     id: 5,
