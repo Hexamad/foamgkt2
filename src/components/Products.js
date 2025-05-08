@@ -16,7 +16,7 @@ const products = [
     image: 'https://5.imimg.com/data5/XF/AM/SG/NSDMERP-56297551/image-1000x1000.jpeg',
     thicknessOptions: [2,3,4,5,6,7,8,9,10,12,15,18,19,20,21,25,30,35,40,45, 50,70, 75,80,85,90,95, 100,125, 150, 200, 250],
     category: 'Mattress Raw Materials',
-    density: '9, 18, 23'
+    density: '9 density, 18 density, 23 density'
   },
   {
     id: 2,
@@ -32,7 +32,7 @@ const products = [
     name: 'Rebonded Foam Sheet',
     // basePrice: 80,
     image: 'https://5.imimg.com/data5/AO/VM/HT/SELLER-6371482/bonded-foam-sheets-500x500.jpg',
-    thicknessOptions: [12,15,18,19,20,21, 22,23,24, 25,30,35,40,45,48,50,55,60,65,70, 75,80,85,90,95,98, 100,110,115,120,125,150],
+    thicknessOptions: [12,15,18,19,20,21,22,23,24,25,30,35,40,45,48,50,55,60,65,70,75,80,85,90,95,98, 100,110,115,120,125,150],
     category: 'Mattress Raw Materials',
     density: '80, 90, 100, 110'
   },
@@ -44,7 +44,7 @@ const products = [
     image: 'https://5.imimg.com/data5/RA/FY/MY-56919196/super-soft-foam-sheet.jpg',
     thicknessOptions: [2,3,4,5,6,7,8,9,10,12,15,18,19, 20,21, 25, 30,35, 40,45, 50,70, 75,80,85,90,95, 100,125, 150, 200, 250],
     category: 'Mattress Raw Materials',
-    density: '24, 28, 32, 40, 40HR'
+    density: '24, 28, 32, 40, 41'
   },
   {
     id: 5,
@@ -125,7 +125,7 @@ const products = [
     image: 'https://m.media-amazon.com/images/I/718+Jl14oOL.jpg',
     thicknessOptions: [15, 18, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100],
     category: 'Mattress Raw Materials',
-    density: '18, 23, 28'
+    density: '18'
   }
 ];
 
