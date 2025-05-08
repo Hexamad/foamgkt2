@@ -71,7 +71,7 @@ export const foamProducts = {
       '65': 0.0250771605
     }
   },
-  EPE_SHEET: {
+  EPE: {
     densities: ['18'],
     ratePerMM: {
       '18': 0.0025462963 ,

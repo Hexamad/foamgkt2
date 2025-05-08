@@ -21,7 +21,7 @@ const products = [
   {
     id: 2,
     name: 'HD PU Foam',
-    basePrice: 250,
+    // basePrice: 250,
     image: 'https://makerbazar.in/cdn/shop/products/high-density-pu-foam-500x500.webp?v=1681727081&width=500',
     thicknessOptions: [2,3, 4,  5, 6, 7, 8, 9 ,10,12,15,18,19, 20,21, 25, 30,35, 40,45, 50,70, 75,80,85,90,95, 100,125, 150, 200, 250],
     category: 'Mattress Raw Materials',
@@ -30,7 +30,7 @@ const products = [
   {
     id: 3,
     name: 'Rebonded Foam Sheet',
-    basePrice: 80,
+    // basePrice: 80,
     image: 'https://5.imimg.com/data5/AO/VM/HT/SELLER-6371482/bonded-foam-sheets-500x500.jpg',
     thicknessOptions: [12,15,18,19,20,21, 22,23,24, 25,30,35,40,45,48,50,55,60,65,70, 75,80,85,90,95,98, 100,110,115,120,125,150],
     category: 'Mattress Raw Materials',
@@ -40,7 +40,7 @@ const products = [
   {
     id: 4,
     name: 'Super Soft Foam',
-    basePrice: 60,
+    // basePrice: 60,
     image: 'https://5.imimg.com/data5/RA/FY/MY-56919196/super-soft-foam-sheet.jpg',
     thicknessOptions: [2,3,4,5,6,7,8,9,10,12,15,18,19, 20,21, 25, 30,35, 40,45, 50,70, 75,80,85,90,95, 100,125, 150, 200, 250],
     category: 'Mattress Raw Materials',
@@ -49,7 +49,7 @@ const products = [
   {
     id: 5,
     name: 'Memory Foam Sheets',
-    basePrice: 120,
+    // basePrice: 120,
     image: 'https://tiimg.tistatic.com/fp/1/007/209/white-color-memory-foam-sheets-263.jpg',
     thicknessOptions: [20,25, 30, 35,40, 45,50,60,70, 75,80,85,90,95, 100,125, 150],
     category: 'Mattress Raw Materials',
@@ -58,7 +58,7 @@ const products = [
   {
     id: 6,
     name: 'Gel Memory Foam Sheets',
-    basePrice: 180,
+    // basePrice: 180,
     image: 'https://m.media-amazon.com/images/I/81LvYefzOFL._SL1500_.jpg',
     thicknessOptions: [20,25, 30, 35,40, 45,50,60,70, 75,80,85,90,95, 100,125, 150],
     category: 'Mattress Raw Materials',
@@ -67,7 +67,7 @@ const products = [
   {
     id: 7,
     name: 'Natural LATEX SHEET',
-    basePrice: 90,
+    // basePrice: 90,
     image: 'https://5.imimg.com/data5/ANDROID/Default/2020/9/HH/UG/DH/44643334/product-jpeg-500x500.png',
     thicknessOptions: [12,18,25,50,75,100,150],
     category: 'Mattress Raw Materials',
@@ -76,7 +76,7 @@ const products = [
   {
     id: 8,
     name: 'Natural LATEX 7 ZONE SHEETS',
-    basePrice: 90,
+    // basePrice: 90,
     image: 'https://5.imimg.com/data5/SELLER/Default/2023/9/341157692/MM/LX/YE/141117433/zero-foam-flex-mattress-1000x1000.jpeg',
     thicknessOptions: [50,100,150],
     category: 'Mattress Raw Materials',
@@ -85,7 +85,7 @@ const products = [
   {
     id: 9,
     name: 'Rubberized Coir Sheet',
-    basePrice: 150,
+    // basePrice: 150,
     image: 'https://www.sughana.com/image/products/rubberized-coir-sheet.jpg',
     thicknessOptions: [12,15,18, 21, 25, 50, 75, 100,125],
     category: 'Mattress Raw Materials',
@@ -94,7 +94,7 @@ const products = [
   {
     id: 10,
     name: 'HR Foam',
-    basePrice: 150,
+    // basePrice: 150,
     image: 'https://lh3.googleusercontent.com/d/1f8X2nqJvAgHpWJpf_OfTGHzrp7M2gA4U=s220?authuser=0',
     thicknessOptions: [2, 3, 4, 5, 6, 8, 10, 12, 15, 18, 19, 20, 25, 30, 35, 40, 45, 50, 60, 70, 75, 80, 85, 90, 100, 125, 150],
     category: 'Mattress Raw Materials',
@@ -103,7 +103,7 @@ const products = [
   {
     id: 11,
     name: 'Fire Retardant Foam (FR FOAM)',
-    basePrice: 150,
+    // basePrice: 150,
     image: 'https://cpimg.tistatic.com/04540749/b/4/Fire-Retardant-Foam.jpg',
     thicknessOptions: [2, 3, 4, 5, 6, 8, 10, 12, 15, 18, 19, 20, 25, 30, 35, 40, 45, 50, 60, 70, 75, 80, 85, 90, 100, 125, 150],
     category: 'Mattress Raw Materials',
@@ -112,7 +112,7 @@ const products = [
   {
     id: 12,
     name: 'Convulated Foam',
-    basePrice: 150,
+    // basePrice: 150,
     image: 'https://5.imimg.com/data5/ANDROID/Default/2021/4/EF/QY/TW/169569/product-jpeg-500x500.jpg',
     thicknessOptions: [40,45,50, 60,70,75, 80, 85, 90, 100, 125, 150],
     category: 'Mattress Raw Materials',
@@ -121,7 +121,7 @@ const products = [
   {
     id: 13,
     name: 'EPE SHEETS (Hitlon)',
-    basePrice: 150,
+    // basePrice: 150,
     image: 'https://m.media-amazon.com/images/I/718+Jl14oOL.jpg',
     thicknessOptions: [15, 18, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100],
     category: 'Mattress Raw Materials',
@@ -211,15 +211,32 @@ function Products({ addToCart, updateCustomerInfo, customerInfo }) {
       case 2:
         foamType = 'ALL_FOAM';
         break;
+      case 3:
+        foamType = 'REBONDED_FOAM';
+        break;
       case 4:
         foamType = 'SUPER_SOFT';
         break;
       case 5:
-      case 6:
         foamType = 'MEMORY_FOAM';
+        break;
+      case 6:
+        foamType = 'GEL_MEMORY_FOAM';
+        break;
+      case 7:
+        foamType = 'LATEX';
+        break;
+      case 8:
+        foamType = 'EPE';
+        break;
+      case 9:
+        foamType = 'CONVULATED';
         break;
       case 10:
         foamType = 'HR_FOAM';
+        break;
+      case 11:
+        foamType = 'HD_FOAM';
         break;
       default:
         foamType = 'ALL_FOAM';
