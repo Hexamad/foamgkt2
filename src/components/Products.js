@@ -16,7 +16,7 @@ const products = [
     image: 'https://5.imimg.com/data5/XF/AM/SG/NSDMERP-56297551/image-1000x1000.jpeg',
     thicknessOptions: [2,3,4,5,6,7,8,9,10,12,15,18,19,20,21,25,30,35,40,45, 50,70, 75,80,85,90,95, 100,125, 150, 200, 250],
     category: 'Mattress Raw Materials',
-    density: '9 density, 18 density, 23 density'
+    density: '9, 18, 23'
   },
   {
     id: 2,
@@ -221,7 +221,7 @@ function Products({ addToCart, updateCustomerInfo, customerInfo }) {
         foamType = 'MEMORY_FOAM';
         break;
       case 6:
-        foamType = 'GEL_MEMORY_FOAM';
+        foamType = 'GELMEMORY_FOAM';
         break;
       case 7:
         foamType = 'LATEX';
