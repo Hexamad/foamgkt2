@@ -28,7 +28,7 @@ function Cart({ cartItems, removeFromCart, onClose, customerInfo, updateCustomer
   };
 
   const getTotalPrice = () => {
-    return cartItems.reduce((total, item) => total + (Number(item.totalPrice) || 0), 0);
+    return cartItems.reduce((total, item) => total + (Number(item.totalPrice) || 0), 0).toFixed(2);
   };
 
   return (
