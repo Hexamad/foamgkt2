@@ -12,10 +12,10 @@ import { calculatePrice, calculateTotalPrice } from '../utils/calculations';
 function Cart({ cartItems, removeFromCart, onClose, customerInfo, updateCustomerInfo }) {
   const pdfRef = useRef();
 
-  const generatePDF = () => {
+  const generatePDF = async () => {
     const element = pdfRef.current;
     const opt = {
-      margin: [1, 1, 2, 1], // Increased bottom margin for footer
+      margin: [1, 1, 2, 1],
       filename: customerInfo.referenceNumber 
         ? `GurukrupaTraders-${customerInfo.referenceNumber}.pdf` 
         : 'GurukrupaTraders-Estimator.pdf',
@@ -24,7 +24,31 @@ function Cart({ cartItems, removeFromCart, onClose, customerInfo, updateCustomer
       jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
     };
 
-    html2pdf().from(element).set(opt).save();
+    // Generate PDF as blob instead of directly saving
+    const pdfBlob = await html2pdf().from(element).set(opt).output('blob');
+    
+    // Create file from blob
+    const pdfFile = new File([pdfBlob], opt.filename, { type: 'application/pdf' });
+
+    // Check if Web Share API is supported and can share files
+    if (navigator.share && navigator.canShare({ files: [pdfFile] })) {
+      try {
+        await navigator.share({
+          files: [pdfFile],
+          title: 'Gurukrupa Traders Estimate',
+          text: 'Please find attached estimate from Gurukrupa Traders'
+        });
+      } catch (error) {
+        if (error.name !== 'AbortError') {
+          console.error('Error sharing:', error);
+          // Fallback to direct download
+          html2pdf().from(element).set(opt).save();
+        }
+      }
+    } else {
+      // Fallback for browsers that don't support sharing
+      html2pdf().from(element).set(opt).save();
+    }
   };
 
   const getTotalPrice = () => {

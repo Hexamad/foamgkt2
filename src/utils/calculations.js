@@ -71,6 +71,9 @@ export const calculatePrice = (dimensions, thickness, density, quantity = 1, sel
     case 'GELMEMORY_FOAM':
       rate = foamProducts.GELMEMORY_FOAM.ratePerMM[density] || 0;
       break;
+    case 'RUBBERIZED_COIR':
+      rate = foamProducts.RUBBERIZED_COIR.ratePerMM[density] || 0;
+      break;
     case 'EPE_SHEET':
       rate = foamProducts.EPE_SHEET.ratePerMM[density] || 0;
       break;

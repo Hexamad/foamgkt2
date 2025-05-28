@@ -98,7 +98,7 @@ const products = [
     image: 'https://lh3.googleusercontent.com/d/1f8X2nqJvAgHpWJpf_OfTGHzrp7M2gA4U=s220?authuser=0',
     thicknessOptions: [2, 3, 4, 5, 6, 8, 10, 12, 15, 18, 19, 20, 25, 30, 35, 40, 45, 50, 60, 70, 75, 80, 85, 90, 100, 125, 150],
     category: 'Mattress Raw Materials',
-    density: '30, 40, 50, 60'
+    density: '32, 40, 50, 60'
   },
   {
     id: 11,
@@ -237,6 +237,9 @@ function Products({ addToCart, updateCustomerInfo, customerInfo }) {
         break;
       case 11:
         foamType = 'HD_FOAM';
+        break;
+      case 12:
+        foamType = 'RUBBERIZED_COIR';
         break;
       default:
         foamType = 'ALL_FOAM';
