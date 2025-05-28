@@ -47,9 +47,9 @@ export const calculatePrice = (dimensions, thickness, density, quantity = 1, sel
   // Get rate based on foam type and density
   let rate;
   switch (foamType) {
-    case 'ALL_FOAM':
-      rate = foamProducts.ALL_FOAM.ratePerMM[density] || 0;
-      break;
+    // case 'ALL_FOAM':
+    //   rate = foamProducts.ALL_FOAM.ratePerMM[density] || 0;
+    //   break;
     case 'LD_FOAM':
       rate = foamProducts.LD_FOAM.ratePerMM[density] || 0;
       break;
@@ -74,8 +74,8 @@ export const calculatePrice = (dimensions, thickness, density, quantity = 1, sel
     case 'RUBBERIZED_COIR':
       rate = foamProducts.RUBBERIZED_COIR.ratePerMM[density] || 0;
       break;
-    case 'EPE_SHEET':
-      rate = foamProducts.EPE_SHEET.ratePerMM[density] || 0;
+    case 'EPE_SHEETS':
+      rate = foamProducts.EPE_SHEETS.ratePerMM[density] || 0;
       break;
     default:
       rate = 0;

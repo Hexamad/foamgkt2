@@ -84,7 +84,7 @@ const products = [
   },
   {
     id: 9,
-    name: 'Rubberized Coir Sheet',
+    name: 'Rubberized Coir',
     // basePrice: 150,
     image: 'https://www.sughana.com/image/products/rubberized-coir-sheet.jpg',
     thicknessOptions: [12,15,18, 21, 25, 50, 75, 100,125],
@@ -125,7 +125,7 @@ const products = [
     image: 'https://m.media-amazon.com/images/I/718+Jl14oOL.jpg',
     thicknessOptions: [15, 18, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100],
     category: 'Mattress Raw Materials',
-    density: '18'
+    density: '18, 23, 28'
   }
 ];
 
@@ -209,7 +209,7 @@ function Products({ addToCart, updateCustomerInfo, customerInfo }) {
         foamType = 'LD_FOAM';
         break;
       case 2:
-        foamType = 'ALL_FOAM';
+        foamType = 'HD_FOAM';
         break;
       case 3:
         foamType = 'REBONDED_FOAM';
@@ -227,22 +227,25 @@ function Products({ addToCart, updateCustomerInfo, customerInfo }) {
         foamType = 'LATEX';
         break;
       case 8:
-        foamType = 'EPE';
+        foamType = 'LATEX_7';
         break;
       case 9:
-        foamType = 'CONVULATED';
+        foamType = 'RUBBERIZED_COIR';  // Correct position for id: 9
         break;
       case 10:
         foamType = 'HR_FOAM';
         break;
       case 11:
-        foamType = 'HD_FOAM';
+        foamType = 'FR_FOAM';
         break;
       case 12:
-        foamType = 'RUBBERIZED_COIR';
+        foamType = 'CONVULATED';  // Wrong position
+        break;
+      case 13:
+        foamType = 'EPE_SHEETS';  // Wrong position
         break;
       default:
-        foamType = 'ALL_FOAM';
+        foamType = 'LD_FOAM';
     }
 
     if (!dimensions.length || !dimensions.width || !thickness || !density) return 0;
